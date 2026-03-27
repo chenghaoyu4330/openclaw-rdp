@@ -49,6 +49,8 @@ openclaw-rdp/
 
 **免交互初始化**：entrypoint.sh 在首次启动时以 `--non-interactive --accept-risk` 参数运行官方 `onboard` 命令，完成 identity 密钥生成、agent 配置等初始化，随后用 Python 精准 patch `openclaw.json` 中的 gateway token 与 MaaS provider 配置，其余字段（hooks、plugins、tools 等）均保持 onboard 写入的默认值。再次启动时检测到 identity 目录已存在则跳过 onboard，只执行 patch 步骤。
 
+patch 会注册三个 provider：`MaaS-openai`（OpenAI 兼容格式）、`MaaS-anthrpc`（Anthropic Messages 格式，默认模型 Claude Sonnet 4.6）、`MaaS-google`（Google Generative AI 格式，Gemini 系列），均指向同一 MaaS 服务根地址。
+
 ---
 
 ## 部署步骤
@@ -171,7 +173,7 @@ google-chrome-stable --no-sandbox --disable-dev-shm-usage --remote-debugging-por
 | 变量名 | 说明 | 默认值 |
 |--------|------|--------|
 | `MAAS_API_KEY` | MaaS 平台的 API Key | 无（必填） |
-| `MAAS_BASE_URL` | MaaS 服务根地址 | `https://maas-beta.tatucloud.com` |
+| `MAAS_BASE_URL` | MaaS 服务根地址 | `https://chat.noc.pku.edu.cn` |
 | `OPENCLAW_GATEWAY_TOKEN` | Gateway 鉴权 Token | 自动随机生成（32字节 hex） |
 | `OPENCLAW_RDP_PASSWORD` | 容器内 `node` 用户的 RDP 密码 | `openclaw`（不安全，务必覆盖） |
 
@@ -262,7 +264,7 @@ docker exec openclaw-alice cat /home/node/.openclaw/openclaw.json | python3 -m j
 
 - 确认 API Key 已传入：`docker exec openclaw-alice env | grep MAAS`
 - 检查配置文件：`docker exec openclaw-alice cat /home/node/.openclaw/openclaw.json`
-- 测试 MaaS 可达性：`docker exec openclaw-alice curl -sf https://maas-beta.tatucloud.com && echo OK`
+- 测试 MaaS 可达性：`docker exec openclaw-alice curl -sf https://chat.noc.pku.edu.cn && echo OK`
 
 ### 重置某用户配置（保留工作区文件）
 

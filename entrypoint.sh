@@ -18,7 +18,7 @@ chown -R node:node "$OPENCLAW_CONFIG_DIR" 2>/dev/null || true
 GATEWAY_TOKEN="${OPENCLAW_GATEWAY_TOKEN:-$(openssl rand -hex 32)}"
 export OPENCLAW_GATEWAY_TOKEN="$GATEWAY_TOKEN"
 
-BASE_URL="${MAAS_BASE_URL:-https://maas-beta.tatucloud.com}"
+BASE_URL="${MAAS_BASE_URL:-https://chat.noc.pku.edu.cn}"
 BASE_URL="${BASE_URL%/}"
 
 # ── 3. Run onboard to initialize identity + agent config (first run only) ───
@@ -88,20 +88,36 @@ if api_key:
         "api": "anthropic-messages",
         "models": providers.get("MaaS-anthrpc", {}).get("models", [
             {
-                "id": "claude-haiku-4-5",
-                "name": "Claude Haiku 4.5 (MaaS)",
+                "id": "claude-sonnet-4-6",
+                "name": "Claude Sonnet 4.6 (MaaS)",
                 "reasoning": False,
                 "input": ["text", "image"],
                 "cost": {"input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0},
                 "contextWindow": 200000,
-                "maxTokens": 4096
+                "maxTokens": 16000
+            }
+        ])
+    }
+    providers["MaaS-google"] = {
+        "baseUrl": base_url + "/v1beta",
+        "apiKey": api_key,
+        "api": "google-generative-ai",
+        "models": providers.get("MaaS-google", {}).get("models", [
+            {
+                "id": "gemini-3.1-pro-preview",
+                "name": "Gemini 3.1 Pro Preview (MaaS)",
+                "reasoning": False,
+                "input": ["text", "image"],
+                "cost": {"input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0},
+                "contextWindow": 1000000,
+                "maxTokens": 8192
             }
         ])
     }
     # ── agents.defaults.model.primary: only set on first run (no existing primary) ──
     agents_def = cfg.setdefault("agents", {}).setdefault("defaults", {})
     if not agents_def.get("model", {}).get("primary"):
-        agents_def.setdefault("model", {})["primary"] = "MaaS-anthrpc/claude-haiku-4-5"
+        agents_def.setdefault("model", {})["primary"] = "MaaS-anthrpc/claude-sonnet-4-6"
 
 with open(path, "w") as f:
     json.dump(cfg, f, indent=2, ensure_ascii=False)
