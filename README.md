@@ -1,12 +1,12 @@
 # OpenClaw RDP 多用户部署方案
 
-基于 OpenClaw 官方镜像，在其基础上加装 xfce4 桌面环境与 xrdp 远程桌面服务，可通过 RDP 客户端连入独立容器，容器内还预装了 Chrome，可开箱即用地访问 OpenClaw Web UI。每个用户对应一个完全隔离的容器，数据互不干扰。
+基于 OpenClaw 官方镜像，在其基础上加装 MATE 桌面环境与 xrdp 远程桌面服务，可通过 RDP 客户端连入独立容器，容器内还预装了 Chrome，可开箱即用地访问 OpenClaw Web UI。每个用户对应一个完全隔离的容器，数据互不干扰。
 
 ## 文件结构
 
 ```
 openclaw-rdp/
-├── Dockerfile.rdp      # 扩展官方镜像：加装 xfce4 + xrdp + supervisord
+├── Dockerfile.rdp      # 扩展官方镜像：加装 MATE + xrdp + supervisord
 ├── supervisord.conf    # 进程管理：同时守护 xrdp 和 openclaw-gateway
 ├── entrypoint.sh       # 容器启动时初始化 openclaw 配置，设置 RDP 密码
 ├── launch.sh           # 按用户名生成并执行 docker run 命令的辅助脚本
@@ -125,7 +125,7 @@ http://localhost:18789
 
 输入 Gateway Token（部署时由 `launch.sh` 打印，或 `--gateway-token` 指定）即可登录。
 
-### 使用 Chrome 调试（供 OpenClaw 控制浏览器）
+### 使用 Chrome 调试（可供 OpenClaw 控制浏览器）
 
 容器内已安装 Google Chrome。由于容器以非特权模式运行，启动时需加 `--no-sandbox --disable-dev-shm-usage`：
 
@@ -134,6 +134,8 @@ google-chrome-stable --no-sandbox --disable-dev-shm-usage --remote-debugging-por
 ```
 
 并访问 `chrome://inspect#remote-debugging` 开启调试
+
+若需要让openclaw操控浏览器，还需要在web UI的左侧边栏找到"Agents"-"Tools"，在"Quick Presets"中将"Coding"改为"Full"并点击Save保存配置
 
 之后与 OpenClaw 对话让它自己配置即可，如“帮你自己配置好通过 Chrome DevTools Protocol 控制我的浏览器进行操作，你可以看看你的browser工具的说明，我已经在9222端口开放了chrome”，OpenClaw 会自动识别并连接这个调试端口，后续就可以自然语言与它对话让它控制浏览器
 
