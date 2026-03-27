@@ -1,12 +1,12 @@
 # OpenClaw RDP 多用户部署方案
 
-基于 OpenClaw 官方镜像，在其基础上加装 MATE 桌面环境与 xrdp 远程桌面服务，可通过 RDP 客户端连入独立容器，容器内还预装了 Chrome，可开箱即用地访问 OpenClaw Web UI。每个用户对应一个完全隔离的容器，数据互不干扰。
+基于 OpenClaw 官方镜像，在其基础上加装 Xfce4 桌面环境与 xrdp 远程桌面服务，可通过 RDP 客户端连入独立容器，容器内还预装了 Chrome，可开箱即用地访问 OpenClaw Web UI。每个用户对应一个完全隔离的容器，数据互不干扰。
 
 ## 文件结构
 
 ```
 openclaw-rdp/
-├── Dockerfile.rdp      # 扩展官方镜像：加装 MATE + xrdp + supervisord
+├── Dockerfile.rdp      # 扩展官方镜像：加装 Xfce4 + xrdp + supervisord
 ├── supervisord.conf    # 进程管理：同时守护 xrdp 和 openclaw-gateway
 ├── entrypoint.sh       # 容器启动时初始化 openclaw 配置，设置 RDP 密码
 ├── launch.sh           # 按用户名生成并执行 docker run 命令的辅助脚本
